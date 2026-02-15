@@ -1,0 +1,7 @@
+{
+  "name": "Lumina Motors",
+  "description": "The ultimate luxury automotive experience.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
