@@ -147,7 +147,7 @@ const Home: React.FC = () => {
     <div className="bg-white">
       {/* 1. Hero Section */}
       <section 
-        className="relative h-[95vh] w-full overflow-hidden bg-[#0a0a0a]"
+        className="relative min-h-[75vh] sm:min-h-[90vh] md:h-screen w-full overflow-hidden bg-[#0a0a0a] pt-24 md:pt-28"
         onMouseEnter={() => setIsHeroHovered(true)}
         onMouseLeave={() => setIsHeroHovered(false)}
       >
@@ -188,21 +188,56 @@ const Home: React.FC = () => {
           )}
         </AnimatePresence>
 
-        <div className="relative z-10 h-full max-w-[1600px] mx-auto px-8 flex flex-col justify-center pb-32">
+        <div className="relative z-10 h-full max-w-[1600px] mx-auto px-6 md:px-8 flex flex-col justify-start pb-24 md:pb-32">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
           >
-            <h1 className="text-white text-4xl md:text-[5rem] font-display font-bold uppercase tracking-tighter leading-[1.1] mb-8 max-w-3xl">
-              Luxury car <br /> purchase in Italy
-            </h1>
-            <Link to="/inventory" className="inline-flex items-center gap-4 px-10 py-5 bg-[#C59B6D] text-white rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-[#b38a5e] transition-all">
-              Rent Now
-            </Link>
+            {/* Mobile / small-screen hero content */}
+            <div className="max-w-3xl space-y-4 block md:hidden">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1 text-[9px] font-black uppercase tracking-[0.3em] text-white/80 backdrop-blur-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#C59B6D]" />
+                Bespoke Italian acquisitions
+              </span>
+              <h1 className="text-white text-3xl sm:text-4xl font-display font-bold uppercase tracking-tighter leading-snug">
+                Luxury car <br className="hidden sm:block" /> purchase in Italy
+              </h1>
+              <p className="text-[13px] sm:text-[14px] text-white/70 max-w-xl leading-relaxed">
+                Commission rare performance icons hand-delivered across Italy. From Milan runways to coastal roads, every detail is orchestrated by our private concierge team.
+              </p>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 pt-2">
+                <Link
+                  to="/inventory"
+                  className="inline-flex items-center justify-center gap-3 px-8 sm:px-10 py-3.5 sm:py-4 bg-[#C59B6D] text-white rounded-full font-black uppercase text-[10px] tracking-[0.3em] hover:bg-[#b38a5e] transition-all shadow-lg shadow-black/30"
+                >
+                  <span>View Inventory</span>
+                  <ArrowRight size={14} />
+                </Link>
+                <Link
+                  to="/booking"
+                  className="inline-flex items-center justify-center gap-2 px-8 sm:px-9 py-3.5 sm:py-4 rounded-full border border-white/30 bg-white/5 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white/10 transition-all"
+                >
+                  <span>Concierge Call</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Desktop / larger-screen hero content (original layout, tuned for md+) */}
+            <div className="hidden md:block">
+              <h1 className="text-white text-4xl lg:text-[5rem] font-display font-bold uppercase tracking-tighter leading-[1.1] mb-6 md:mb-8 max-w-3xl">
+                Luxury car <br /> purchase in Italy
+              </h1>
+              <Link
+                to="/inventory"
+                className="inline-flex items-center gap-4 px-10 py-5 bg-[#C59B6D] text-white rounded-full font-bold uppercase text-[10px] tracking-widest hover:bg-[#b38a5e] transition-all"
+              >
+                Rent Now
+              </Link>
+            </div>
           </motion.div>
 
-          <div className="absolute top-32 right-8 hidden lg:block h-72">
+          <div className="absolute top-1/2 -translate-y-1/2 right-8 hidden lg:block h-72">
             <AnimatePresence mode="wait">
               <motion.div 
                 key={currentHeroCar.id}
@@ -246,12 +281,51 @@ const Home: React.FC = () => {
               </motion.div>
             </AnimatePresence>
           </div>
+
+          {/* Medium screens hero car card (stacked, not absolute) */}
+          <div className="mt-10 hidden md:flex lg:hidden justify-center">
+            <motion.div
+              key={`${currentHeroCar.id}-md`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="glass-light p-5 rounded-[2rem] w-full max-w-sm shadow-2xl relative overflow-hidden bg-white/95"
+            >
+              <Link to={`/car/${currentHeroCar.id}`}>
+                <div className="flex justify-between items-center mb-4">
+                  <span className="font-bold text-base text-black">
+                    ${Math.round(currentHeroCar.price / 300).toLocaleString()}/day
+                  </span>
+                  <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center">
+                    <ArrowRight size={14} />
+                  </div>
+                </div>
+                <div className="h-32 mb-3 overflow-hidden rounded-xl">
+                  <img
+                    src={currentHeroCar.image}
+                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
+                    alt={currentHeroCar.model}
+                  />
+                </div>
+                <div className="flex justify-between items-end">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-black/80">
+                      {currentHeroCar.make}
+                    </p>
+                    <p className="text-[12px] font-display font-bold uppercase tracking-tight text-black">
+                      {currentHeroCar.model}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          </div>
         </div>
 
         {/* Booking Bar */}
-        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-full max-w-[1200px] px-8 z-20">
-          <div className="bg-white rounded-full p-1.5 flex flex-col lg:flex-row items-center shadow-2xl border border-black/5 overflow-hidden">
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-4 w-full">
+        <div className="hidden md:block absolute bottom-6 lg:bottom-10 left-1/2 -translate-x-1/2 w-full max-w-xl lg:max-w-[1200px] px-4 md:px-6 lg:px-8 z-20">
+          <div className="bg-white rounded-3xl lg:rounded-full p-2 md:p-3 flex flex-col lg:flex-row items-center shadow-2xl border border-black/5 overflow-hidden">
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 w-full">
               <div className="px-5 py-3 border-r border-black/5 hover:bg-neutral-50 transition-colors cursor-pointer group">
                 <p className="text-[7px] font-black uppercase tracking-widest text-black/30 mb-0.5 group-hover:text-[#C59B6D]">Pick Up Address</p>
                 <div className="flex items-center gap-2">

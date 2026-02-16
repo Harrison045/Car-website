@@ -1,0 +1,274 @@
+/* ========================================
+   LUMINA MOTORS - RESPONSIVE FIXES
+   ======================================== */
+
+/* Prevent horizontal scroll globally */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+body {
+  position: relative;
+}
+
+/* Ensure all containers respect viewport width */
+* {
+  box-sizing: border-box;
+}
+
+/* Improve mobile scrolling */
+@media (max-width: 1024px) {
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Base responsive padding for sections */
+@media (max-width: 640px) {
+  section {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+/* Typography responsive scaling */
+@media (max-width: 768px) {
+  /* Hero headings scale down */
+  h1 {
+    font-size: clamp(2.5rem, 8vw, 5rem) !important;
+  }
+  
+  /* Reduce excessive tracking on mobile */
+  .tracking-\[0\.8em\],
+  .tracking-\[0\.6em\],
+  .tracking-\[0\.5em\] {
+    letter-spacing: 0.3em !important;
+  }
+}
+
+/* Touch-friendly interactive elements */
+@media (hover: none) and (pointer: coarse) {
+  /* Minimum touch target size */
+  button, a, input[type="checkbox"], input[type="radio"] {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  /* Remove hover states on touch devices */
+  .hover\:scale-110:hover,
+  .hover\:scale-105:hover {
+    transform: none;
+  }
+  
+  /* Add tap highlight */
+  button, a {
+    -webkit-tap-highlight-color: rgba(197, 155, 109, 0.2);
+  }
+}
+
+/* Grid responsive improvements */
+@media (max-width: 768px) {
+  /* Force single column on mobile for complex grids */
+  .grid-cols-2, .grid-cols-3, .grid-cols-4, .grid-cols-5 {
+    grid-template-columns: 1fr;
+  }
+  
+  .md\:grid-cols-2, .lg\:grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Tablet: 2 columns max */
+  .lg\:grid-cols-3, .lg\:grid-cols-4, .lg\:grid-cols-5 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Fix carousel overflow */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Improve form inputs on mobile */
+@media (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+}
+
+/* Modal and overlay improvements */
+@media (max-width: 768px) {
+  /* Full screen modals on mobile */
+  [role="dialog"],
+  .fixed.inset-0 {
+    padding: 1rem;
+  }
+}
+
+/* Image performance - prevent layout shift */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Aspect ratio containers */
+.aspect-\[16\/10\],
+.aspect-\[16\/11\],
+.aspect-\[21\/9\],
+.aspect-\[4\/5\] {
+  position: relative;
+  overflow: hidden;
+}
+
+.aspect-\[16\/10\] img,
+.aspect-\[16\/11\] img,
+.aspect-\[21\/9\] img,
+.aspect-\[4\/5\] img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Horizontal scroll fix for carousels */
+@media (max-width: 1024px) {
+  .snap-x {
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+  }
+  
+  .snap-start {
+    scroll-snap-align: start;
+  }
+}
+
+/* Reduce animations on mobile for performance */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Mobile-specific fixes for common issues */
+@media (max-width: 640px) {
+  /* Reduce gap in flex/grid */
+  .gap-20 { gap: 2rem; }
+  .gap-16 { gap: 1.5rem; }
+  .gap-12 { gap: 1rem; }
+  .gap-10 { gap: 0.75rem; }
+  
+  /* Adjust padding */
+  .p-20 { padding: 1.5rem; }
+  .p-16 { padding: 1.25rem; }
+  .p-12 { padding: 1rem; }
+  .p-10 { padding: 0.75rem; }
+  
+  .px-20 { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .px-16 { padding-left: 1.25rem; padding-right: 1.25rem; }
+  .px-12 { padding-left: 1rem; padding-right: 1rem; }
+  
+  .py-40 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+  .py-32 { padding-top: 2rem; padding-bottom: 2rem; }
+  .py-24 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+  
+  /* Margin adjustments */
+  .mb-32 { margin-bottom: 2rem; }
+  .mb-24 { margin-bottom: 1.5rem; }
+  .mb-20 { margin-bottom: 1.25rem; }
+  .mb-16 { margin-bottom: 1rem; }
+}
+
+/* Tablet-specific */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .gap-20 { gap: 3rem; }
+  .gap-16 { gap: 2rem; }
+  
+  .py-40 { padding-top: 4rem; padding-bottom: 4rem; }
+  .py-32 { padding-top: 3rem; padding-bottom: 3rem; }
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+  
+  .fixed.top-0 {
+    padding-top: max(0px, env(safe-area-inset-top));
+  }
+  
+  .fixed.bottom-0 {
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Loading skeleton improvements */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Utility: Hide elements on specific breakpoints */
+.hide-on-mobile {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .hide-on-mobile {
+    display: block;
+  }
+}
+
+.hide-on-desktop {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .hide-on-desktop {
+    display: none;
+  }
+}
+
+/* Fix z-index stacking issues */
+.z-\[60\] {
+  z-index: 60;
+}
+
+.z-\[9999\] {
+  z-index: 9999;
+}
+
+/* Improve readability */
+@media (max-width: 768px) {
+  p, li {
+    line-height: 1.7;
+  }
+}
+
+/* Better focus states for accessibility */
+*:focus-visible {
+  outline: 2px solid #C59B6D;
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline-width: 3px;
+}
