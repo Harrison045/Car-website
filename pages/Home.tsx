@@ -79,6 +79,7 @@ const Home: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const [isHeroHovered, setIsHeroHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   // We double the cars for the seamless loop
   const carouselCars = [...CARS, ...CARS];
@@ -103,6 +104,19 @@ const Home: React.FC = () => {
       clearInterval(offerTimer);
     };
   }, [OFFERS.length]);
+
+  // Track mobile viewport to control carousel movement distance
+  useEffect(() => {
+    const updateIsMobile = () => {
+      if (typeof window === 'undefined') return;
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    updateIsMobile();
+    window.addEventListener('resize', updateIsMobile);
+
+    return () => window.removeEventListener('resize', updateIsMobile);
+  }, []);
 
   // Separate Effect for Carousel to handle Pause on Hover
   useEffect(() => {
@@ -142,6 +156,7 @@ const Home: React.FC = () => {
   const currentHeroCar = CARS[currentHeroCarIdx];
   const currentTestimonial = TESTIMONIALS[currentTestimonialIdx];
   const currentOffer = OFFERS[currentOfferIdx];
+  const vehicleSlidePercent = isMobile ? 100 : 100 / 4;
 
   return (
     <div className="bg-white">
@@ -161,7 +176,7 @@ const Home: React.FC = () => {
             className="w-full h-full object-cover opacity-60 grayscale-[0.2]"
             poster="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=2400"
           >
-            <source src="https://assets.mixkit.co/videos/preview/mixkit-luxury-car-driving-on-the-highway-at-sunset-34537-large.mp4" type="video/mp4" />
+            <source src="/public/GT3RS NIGHT RUN [4K] - werqshop (1080p, h264) (1).mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent" />
@@ -433,23 +448,23 @@ const Home: React.FC = () => {
           </div>
 
           <div 
-            className="relative"
+            className="relative overflow-hidden"
             onMouseEnter={() => setIsCarouselPaused(true)}
             onMouseLeave={() => setIsCarouselPaused(false)}
           >
             <motion.div 
-              animate={{ x: `-${carouselIndex * (100 / 4)}%` }}
+              animate={{ x: `-${carouselIndex * vehicleSlidePercent}%` }}
               transition={isResetting ? { duration: 0 } : { duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
               onAnimationComplete={handleAnimationComplete}
-              className="flex gap-4"
+              className="flex gap-0 md:gap-4"
             >
               {carouselCars.map((car, idx) => (
-                <div key={`${car.id}-${idx}`} className="flex-shrink-0 w-full md:w-[calc(50%-8px)] lg:w-[calc(25%-12px)]">
+                <div key={`${car.id}-${idx}`} className="flex-shrink-0 w-full md:w-[calc(50%-8px)] lg:w-[calc(31%-12px)]">
                   <Link to={`/car/${car.id}`}>
                     <motion.div 
                       whileHover="hover"
                       initial="initial"
-                      className="relative aspect-[3/4] overflow-hidden group rounded-2xl cursor-pointer bg-neutral-100"
+                      className="relative h-[320px] md:h-[380px] lg:h-[470px] overflow-hidden group rounded-2xl cursor-pointer bg-neutral-100"
                     >
                       <motion.img 
                         src={car.image} 
