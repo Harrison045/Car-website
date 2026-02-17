@@ -96,7 +96,7 @@ const Home: React.FC = () => {
   useEffect(() => {
     const heroTimer = setInterval(() => setCurrentHeroCarIdx((prev) => (prev + 1) % CARS.length), 8000);
     const testimonialTimer = setInterval(() => setCurrentTestimonialIdx((prev) => (prev + 1) % TESTIMONIALS.length), 6000);
-    const offerTimer = setInterval(() => setCurrentOfferIdx((prev) => (prev + 1) % OFFERS.length), 60000);
+    const offerTimer = setInterval(() => setCurrentOfferIdx((prev) => (prev + 1) % OFFERS.length), 10000);
 
     return () => {
       clearInterval(heroTimer);
@@ -621,14 +621,14 @@ const Home: React.FC = () => {
                     return (
                       <div 
                         key={qIdx} 
-                        className={`rounded-[1.5rem] border transition-all duration-500 overflow-hidden ${isOpen ? 'bg-neutral-50 border-black/5' : 'bg-transparent border-transparent hover:bg-neutral-50/50'}`}
+                        className={`rounded-[1.5rem] border transition-all duration-500 overflow-hidden ${isOpen ? 'bg-neutral-100 border-black/5' : 'bg-transparent border-transparent hover:bg-neutral-50/50'}`}
                       >
                         <button 
                           onClick={() => setActiveFaqIdx(isOpen ? null : globalIdx)}
                           className="w-full px-8 py-6 flex justify-between items-center text-left focus:outline-none"
                         >
                           <span className="text-[11px] font-black uppercase tracking-widest text-black/80">{item.q}</span>
-                          <ChevronDown size={16} className={`transition-transform duration-500 ${isOpen ? 'rotate-180 text-black' : 'text-black/20'}`} />
+                          <ChevronDown size={16} className={`transition-transform duration-500 ${isOpen ? 'rotate-180 text-black' : 'text-black'}`} />
                         </button>
                         <AnimatePresence>
                           {isOpen && (
@@ -688,7 +688,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* 7. Newsletter */}
-      <section className="py-40 bg-neutral-50 text-center px-8">
+      <section className="py-40 bg-neutral-200 text-center px-8">
         <div className="max-w-xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-display font-bold uppercase tracking-tighter mb-8 text-black italic">Subscribe and get 20% off <br /> your first rental.</h2>
           <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">

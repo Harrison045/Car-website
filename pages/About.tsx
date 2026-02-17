@@ -58,7 +58,7 @@ const About: React.FC = () => {
       <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img 
-            src="https://images.unsplash.com/photo-1562141982-10f547164993?auto=format&fit=crop&q=80&w=2400" 
+            src="https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg" 
             className="w-full h-full object-cover opacity-30 grayscale"
             alt="Luxury Interior Detail"
           />
@@ -152,7 +152,7 @@ const About: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="p-12 bg-neutral-50 rounded-[3rem] border border-black/5 hover:shadow-2xl transition-all group"
+                className="p-12 bg-neutral-50 rounded-[3rem] border border-black/5 hover:shadow-2xl transition-all ease-in-out duration-700 group"
               >
                 <div className="w-16 h-16 rounded-2xl bg-black text-white flex items-center justify-center mb-10 group-hover:scale-110 transition-transform">
                   <service.icon size={28} />
@@ -186,7 +186,7 @@ const About: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 lg:gap-8">
               {milestones.map((m, i) => (
                 <div key={i} className="relative z-10 space-y-8 group">
-                  <div className="text-5xl font-display font-black text-white/5 group-hover:text-[#C59B6D]/20 transition-colors duration-500">
+                  <div className="text-5xl font-display font-black text-white/15 group-hover:text-[#C59B6D]/20 transition-colors duration-500">
                     {m.year}
                   </div>
                   <div className="lg:pt-20">
