@@ -26,17 +26,17 @@ const Navbar: React.FC = () => {
     { name: 'Contacts', path: '/contact' },
   ];
 
-  const isTransparentState = location.pathname === '/' && !scrolled;
+  const isTransparentState = !scrolled;
 
   return (
-    <nav 
+   <nav 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled 
-          ? 'py-3 md:py-4 bg-white border-b border-black/5 shadow-sm' 
-          : 'py-6 md:py-8 bg-transparent'
+        !isTransparentState 
+          ? 'bg-white border-b border-black/5 shadow-sm' 
+          : 'bg-transparent'
       }`}
     >
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 flex justify-between items-center">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 flex justify-between items-center h-[64px] md:h-[80px]">
         {/* Left Links - Hidden on mobile */}
         <div className="hidden lg:flex items-center gap-6 xl:gap-10">
           {navLinks.map((link) => (
