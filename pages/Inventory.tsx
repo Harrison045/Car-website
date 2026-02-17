@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LayoutGrid, List, SlidersHorizontal, ArrowUpRight, Search, X } from 'lucide-react';
 import { CARS } from '../data/mockData';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 const SkeletonCard: React.FC<{ view: 'grid' | 'list' }> = ({ view }) => (
   <div 
@@ -35,13 +35,14 @@ const SkeletonCard: React.FC<{ view: 'grid' | 'list' }> = ({ view }) => (
 );
 
 const Inventory: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState({
-    make: 'All',
-    bodyType: 'All',
-    maxPrice: 500000
+    make: searchParams.get('make') || 'All',
+    bodyType: searchParams.get('bodyType') || 'All',
+    maxPrice: Number(searchParams.get('maxPrice')) || 500000
   });
 
   useEffect(() => {

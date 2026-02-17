@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowRight, 
@@ -18,10 +18,12 @@ import {
   Key,
   Shield,
   CreditCard,
-  HelpCircle
+  HelpCircle,
+  Search
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { CARS, BLOGS } from '../data/mockData';
+import CustomSelect from '../components/CustomSelect';
 
 const TESTIMONIALS = [
   {
@@ -80,6 +82,27 @@ const Home: React.FC = () => {
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const [isHeroHovered, setIsHeroHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Filter State
+  const [filterMake, setFilterMake] = useState('All');
+  const [filterBody, setFilterBody] = useState('All');
+  const [filterPrice, setFilterPrice] = useState<number | ''>(500000);
+  const navigate = useNavigate();
+
+  const handleSearch = () => {
+    const price = filterPrice === '' ? 0 : filterPrice;
+    navigate(`/inventory?make=${filterMake}&bodyType=${filterBody}&maxPrice=${price}`);
+  };
+
+  const matchingCount = useMemo(() => {
+    return CARS.filter(car => {
+      const matchMake = filterMake === 'All' || car.make === filterMake;
+      const matchBody = filterBody === 'All' || car.bodyType === filterBody;
+      const priceLimit = filterPrice === '' ? 0 : filterPrice;
+      const matchPrice = car.price <= priceLimit;
+      return matchMake && matchBody && matchPrice;
+    }).length;
+  }, [filterMake, filterBody, filterPrice]);
 
   // We double the cars for the seamless loop
   const carouselCars = [...CARS, ...CARS];
@@ -337,42 +360,65 @@ const Home: React.FC = () => {
           </div>
         </div>
 
-        {/* Booking Bar */}
+        {/* Booking Bar -> Filter Bar */}
         <div className="hidden md:block absolute bottom-6 lg:bottom-10 left-1/2 -translate-x-1/2 w-full max-w-xl lg:max-w-[1200px] px-4 md:px-6 lg:px-8 z-20">
-          <div className="bg-white rounded-3xl lg:rounded-full p-2 md:p-3 flex flex-col lg:flex-row items-center shadow-2xl border border-black/5 overflow-hidden">
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 w-full">
-              <div className="px-5 py-3 border-r border-black/5 hover:bg-neutral-50 transition-colors cursor-pointer group">
-                <p className="text-[7px] font-black uppercase tracking-widest text-black/30 mb-0.5 group-hover:text-[#C59B6D]">Pick Up Address</p>
-                <div className="flex items-center gap-2">
-                  <MapPin size={10} className="text-black/20" />
-                  <span className="text-[10px] font-bold uppercase tracking-tight text-black">Milan, Airport...</span>
-                </div>
+          <div className="bg-white rounded-3xl lg:rounded-full p-2 md:p-3 flex flex-col lg:flex-row items-center shadow-2xl border border-black/5">
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-3 w-full">
+              
+              {/* Make Filter */}
+              <CustomSelect
+                label="Make"
+                value={filterMake}
+                options={['All', ...Array.from(new Set(CARS.map(c => c.make)))]}
+                onChange={setFilterMake}
+                bgClass="hover:bg-neutral-50"
+              />
+
+              {/* Body Type Filter */}
+              <CustomSelect
+                label="Body Style"
+                value={filterBody}
+                options={['All', ...Array.from(new Set(CARS.map(c => c.bodyType)))]}
+                onChange={setFilterBody}
+                bgClass="hover:bg-neutral-50"
+              />
+
+              {/* Price Filter */}
+              <div className="px-5 py-3 hover:bg-neutral-50 transition-colors cursor-pointer group relative">
+                 <p className="text-[7px] font-black uppercase tracking-widest text-black/30 mb-0.5 group-hover:text-[#C59B6D]">Max Price</p>
+                 <div className="flex items-center gap-1 relative z-20">
+                    <span className="text-[10px] font-bold uppercase tracking-tight text-black">$</span>
+                    <input
+                      type="number"
+                      min="0"
+                      max="1000000"
+                      step="1000"
+                      value={filterPrice}
+                      onChange={(e) => setFilterPrice(e.target.value === '' ? '' : Number(e.target.value))}
+                      className="text-[10px] font-bold uppercase tracking-tight text-black bg-transparent border-none outline-none w-28 p-0 focus:ring-0"
+                      placeholder="0"
+                    />
+                 </div>
+                 <input 
+                    type="range" 
+                    min="50000" 
+                    max="500000" 
+                    step="10000"
+                    value={filterPrice === '' ? 0 : filterPrice}
+                    onChange={(e) => setFilterPrice(Number(e.target.value))}
+                    className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                 />
               </div>
-              <div className="px-5 py-3 border-r border-black/5 hover:bg-neutral-50 transition-colors cursor-pointer group">
-                <p className="text-[7px] font-black uppercase tracking-widest text-black/30 mb-0.5 group-hover:text-[#C59B6D]">Drop Off Address</p>
-                <div className="flex items-center gap-2">
-                  <MapPin size={10} className="text-black/20" />
-                  <span className="text-[10px] font-bold uppercase tracking-tight text-black">Distance, Hourly...</span>
-                </div>
-              </div>
-              <div className="px-5 py-3 border-r border-black/5 hover:bg-neutral-50 transition-colors cursor-pointer group">
-                <p className="text-[7px] font-black uppercase tracking-widest text-black/30 mb-0.5 group-hover:text-[#C59B6D]">Pick Up Date</p>
-                <div className="flex items-center gap-2">
-                  <Calendar size={10} className="text-black/20" />
-                  <span className="text-[10px] font-bold uppercase tracking-tight text-black">APR 19, 2024</span>
-                </div>
-              </div>
-              <div className="px-5 py-3 hover:bg-neutral-50 transition-colors cursor-pointer group">
-                <p className="text-[7px] font-black uppercase tracking-widest text-black/30 mb-0.5 group-hover:text-[#C59B6D]">Pick Up Time</p>
-                <div className="flex items-center gap-2">
-                  <Clock size={10} className="text-black/20" />
-                  <span className="text-[10px] font-bold uppercase tracking-tight text-black">10:00 AM</span>
-                </div>
-              </div>
+
             </div>
-            <button className="bg-[#E9C46A] hover:bg-[#dfba5d] text-white px-8 py-4 rounded-full flex items-center gap-3 transition-all lg:w-auto w-full justify-center">
-              <Play size={12} fill="white" />
-              <span className="text-[9px] font-black uppercase tracking-[0.2em]">Book Now</span>
+            <button 
+              onClick={handleSearch}
+              className="bg-[#E9C46A] hover:bg-[#dfba5d] text-white px-8 py-4 rounded-full flex items-center gap-3 transition-all lg:w-auto w-full justify-center min-w-[200px]"
+            >
+              <Search size={12} strokeWidth={3} />
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] whitespace-nowrap">
+                {matchingCount > 0 ? `View ${matchingCount} Asset${matchingCount === 1 ? '' : 's'}` : 'No Assets Found'}
+              </span>
             </button>
           </div>
         </div>
