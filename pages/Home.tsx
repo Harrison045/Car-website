@@ -176,7 +176,7 @@ const Home: React.FC = () => {
             className="w-full h-full object-cover opacity-60 grayscale-[0.2]"
             poster="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=2400"
           >
-            <source src="/public/GT3RS NIGHT RUN [4K] - werqshop (1080p, h264) (1).mp4" type="video/mp4" />
+            <source src="/GT3RS NIGHT RUN [4K] - werqshop (1080p, h264) (1).mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent" />
