@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CARS } from '../data/mockData';
+import { useAuth } from '../contexts/AuthContext';
+import AuthModal from '../components/AuthModal';
 import { 
   ArrowLeft, 
   CheckCircle2, 
@@ -30,10 +32,12 @@ import {
 const CarDetails: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const car = CARS.find(c => c.id === id);
   
   const [activeImg, setActiveImg] = useState(car?.gallery[0] || car?.image || '');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [bookingStatus, setBookingStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
 
   useEffect(() => {
@@ -64,6 +68,10 @@ const CarDetails: React.FC = () => {
   );
 
   const handleBookingStart = () => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
     setBookingStatus('idle');
     setShowConfirmModal(true);
     document.body.style.overflow = 'hidden';
@@ -262,7 +270,7 @@ VERIFIED BY LUMINA SELECT PROTOCOL
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center overflow-hidden"
+            className="fixed inset-0 z-[9999] bg-black flex flex-col items-start justify-start overflow-y-auto pt-20"
           >
             <motion.div 
               initial={{ scale: 1.1, opacity: 0 }}
@@ -274,7 +282,7 @@ VERIFIED BY LUMINA SELECT PROTOCOL
               <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
             </motion.div>
 
-            <div className="relative z-10 w-full max-w-6xl px-8 flex flex-col items-center text-center">
+            <div className="relative z-10 w-full max-w-6xl px-8 py-8 flex flex-col items-center text-center mx-auto">
               <motion.button 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -382,6 +390,11 @@ VERIFIED BY LUMINA SELECT PROTOCOL
           </motion.div>
         )}
       </AnimatePresence>
+      
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+      />
     </div>
   );
 };

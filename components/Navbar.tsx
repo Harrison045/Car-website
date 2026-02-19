@@ -2,11 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, User, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../contexts/AuthContext';
+import UserProfile from './UserProfile';
+import AuthModal from './AuthModal';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -69,16 +74,20 @@ const Navbar: React.FC = () => {
             <Globe size={12} className="sm:w-3.5 sm:h-3.5" />
             <span className="hidden md:inline">ENG</span>
           </div>
-          <Link 
-            to="/contact" 
-            className={`w-10 h-10 sm:w-10 sm:h-10 rounded-full border flex items-center justify-center transition-all hover:scale-110 min-w-[40px] min-h-[40px] ${
-              isTransparentState 
-                ? 'border-white/20 text-white' 
-                : 'border-black/10 text-black'
-            }`}
-          >
-            <User size={16} className="sm:w-[18px] sm:h-[18px]" />
-          </Link>
+          {isAuthenticated ? (
+            <UserProfile />
+          ) : (
+            <button
+              onClick={() => setShowAuthModal(true)}
+              className={`w-10 h-10 sm:w-10 sm:h-10 rounded-full border flex items-center justify-center transition-all hover:scale-110 min-w-[40px] min-h-[40px] ${
+                isTransparentState 
+                  ? 'border-white/20 text-white' 
+                  : 'border-black/10 text-black'
+              }`}
+            >
+              <User size={16} className="sm:w-[18px] sm:h-[18px]" />
+            </button>
+          )}
           <button 
             className="lg:hidden min-w-[44px] min-h-[44px] flex items-center justify-center -mr-2" 
             onClick={() => setIsOpen(!isOpen)}
@@ -140,6 +149,11 @@ const Navbar: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+      />
     </nav>
   );
 };

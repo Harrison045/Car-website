@@ -361,9 +361,9 @@ const Home: React.FC = () => {
         </div>
 
         {/* Booking Bar -> Filter Bar */}
-        <div className="hidden md:block absolute bottom-6 lg:bottom-10 left-1/2 -translate-x-1/2 w-full max-w-xl lg:max-w-[1200px] px-4 md:px-6 lg:px-8 z-20">
-          <div className="bg-white rounded-3xl lg:rounded-full p-2 md:p-3 flex flex-col lg:flex-row items-center shadow-2xl border border-black/5">
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-3 w-full">
+        <div className="hidden md:block absolute bottom-4 lg:bottom-6 left-1/2 -translate-x-1/2 w-full max-w-xl lg:max-w-[1200px] px-4 md:px-6 lg:px-8 z-20">
+          <div className="bg-neutral-900/95 backdrop-blur-md rounded-2xl p-2 md:p-3 flex flex-col lg:flex-row items-center shadow-2xl border border-white/10">
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-3 w-full divide-y md:divide-y-0 md:divide-x divide-white/10">
               
               {/* Make Filter */}
               <CustomSelect
@@ -371,7 +371,8 @@ const Home: React.FC = () => {
                 value={filterMake}
                 options={['All', ...Array.from(new Set(CARS.map(c => c.make)))]}
                 onChange={setFilterMake}
-                bgClass="hover:bg-neutral-50"
+                bgClass="hover:bg-white/5"
+                theme="dark"
               />
 
               {/* Body Type Filter */}
@@ -380,14 +381,15 @@ const Home: React.FC = () => {
                 value={filterBody}
                 options={['All', ...Array.from(new Set(CARS.map(c => c.bodyType)))]}
                 onChange={setFilterBody}
-                bgClass="hover:bg-neutral-50"
+                bgClass="hover:bg-white/5"
+                theme="dark"
               />
 
               {/* Price Filter */}
-              <div className="px-5 py-3 hover:bg-neutral-50 transition-colors cursor-pointer group relative">
-                 <p className="text-[7px] font-black uppercase tracking-widest text-black/30 mb-0.5 group-hover:text-[#C59B6D]">Max Price</p>
+              <div className="px-5 py-3 hover:bg-white/5 transition-colors cursor-pointer group relative rounded-xl">
+                 <p className="text-[9px] font-bold uppercase tracking-widest text-white/40 mb-1 group-hover:text-[#C59B6D] transition-colors">Max Price</p>
                  <div className="flex items-center gap-1 relative z-20">
-                    <span className="text-[10px] font-bold uppercase tracking-tight text-black">$</span>
+                    <span className="text-[13px] font-bold uppercase tracking-tight text-white">$</span>
                     <input
                       type="number"
                       min="0"
@@ -395,7 +397,7 @@ const Home: React.FC = () => {
                       step="1000"
                       value={filterPrice}
                       onChange={(e) => setFilterPrice(e.target.value === '' ? '' : Number(e.target.value))}
-                      className="text-[10px] font-bold uppercase tracking-tight text-black bg-transparent border-none outline-none w-28 p-0 focus:ring-0"
+                      className="text-[13px] font-bold uppercase tracking-tight text-white bg-transparent border-none outline-none w-28 p-0 focus:ring-0 placeholder-white/30"
                       placeholder="0"
                     />
                  </div>
@@ -413,10 +415,11 @@ const Home: React.FC = () => {
             </div>
             <button 
               onClick={handleSearch}
-              className="bg-[#E9C46A] hover:bg-[#dfba5d] text-white px-8 py-4 rounded-full flex items-center gap-3 transition-all lg:w-auto w-full justify-center min-w-[200px]"
+              className="group relative overflow-hidden bg-[#E9C46A] hover:bg-[#dfba5d] text-white px-8 py-4 rounded-full flex items-center gap-3 transition-all lg:w-auto w-full justify-center min-w-[200px] shadow-lg shadow-[#E9C46A]/20"
             >
-              <Search size={12} strokeWidth={3} />
-              <span className="text-[9px] font-black uppercase tracking-[0.2em] whitespace-nowrap">
+              <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shine" />
+              <Search size={14} strokeWidth={3} className="relative z-10" />
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] whitespace-nowrap relative z-10">
                 {matchingCount > 0 ? `View ${matchingCount} Asset${matchingCount === 1 ? '' : 's'}` : 'No Assets Found'}
               </span>
             </button>

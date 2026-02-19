@@ -18,6 +18,7 @@ import Locations from './pages/Locations';
 import FAQ from './pages/FAQ';
 import Booking from './pages/Booking';
 import { AnimatePresence, motion } from 'framer-motion';
+import { AuthProvider } from './contexts/AuthContext';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -62,16 +63,18 @@ const AnimatedRoutes = () => {
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <ScrollToTop />
-      <div className="flex flex-col min-h-screen relative overflow-x-hidden">
-        <Navbar />
-        <main className="flex-grow">
-          <AnimatedRoutes />
-        </main>
-        <Footer />
-      </div>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <ScrollToTop />
+        <div className="flex flex-col min-h-screen relative overflow-x-hidden">
+          <Navbar />
+          <main className="flex-grow">
+            <AnimatedRoutes />
+          </main>
+          <Footer />
+        </div>
+      </Router>
+    </AuthProvider>
   );
 };
 

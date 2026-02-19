@@ -23,9 +23,12 @@ import {
   CreditCard
 } from 'lucide-react';
 import { CARS } from '../data/mockData';
+import { useAuth } from '../contexts/AuthContext';
+import AuthModal from '../components/AuthModal';
 
 const Booking: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const { isAuthenticated } = useAuth();
   const preSelectedId = searchParams.get('carId');
 
   const [selectedCar, setSelectedCar] = useState(CARS.find(c => c.id === preSelectedId) || CARS[0]);
@@ -34,6 +37,7 @@ const Booking: React.FC = () => {
   const [location, setLocation] = useState('Milan HQ');
   const [addons, setAddons] = useState<string[]>([]);
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const addonOptions = [
     { id: 'driver', name: 'Private Chauffeur', price: 450, icon: UserCheck, desc: 'Professional security-trained operator' },
@@ -62,6 +66,10 @@ const Booking: React.FC = () => {
 
   const handleBooking = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
     setFormStatus('submitting');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setTimeout(() => {
@@ -445,6 +453,11 @@ VERIFIED BY LUMINA SELECT PROTOCOL
           )}
         </AnimatePresence>
       </div>
+      
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+      />
     </div>
   );
 };
