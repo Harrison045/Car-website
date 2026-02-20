@@ -22,7 +22,8 @@ import {
   Search
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { CARS, BLOGS } from '../data/mockData';
+import { carService } from '../services/carService';
+import { BLOGS } from '../data/mockData';
 import CustomSelect from '../components/CustomSelect';
 
 const TESTIMONIALS = [
@@ -89,35 +90,55 @@ const Home: React.FC = () => {
   const [filterPrice, setFilterPrice] = useState<number | ''>(500000);
   const navigate = useNavigate();
 
+  // Cars State
+  const [cars, setCars] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch cars from backend on component mount
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        const fetchedCars = await carService.getAllCars();
+        setCars(fetchedCars);
+      } catch (error) {
+        console.error('Error fetching cars:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCars();
+  }, []);
+
   const handleSearch = () => {
     const price = filterPrice === '' ? 0 : filterPrice;
     navigate(`/inventory?make=${filterMake}&bodyType=${filterBody}&maxPrice=${price}`);
   };
 
   const matchingCount = useMemo(() => {
-    return CARS.filter(car => {
+    return cars.filter(car => {
       const matchMake = filterMake === 'All' || car.make === filterMake;
       const matchBody = filterBody === 'All' || car.bodyType === filterBody;
       const priceLimit = filterPrice === '' ? 0 : filterPrice;
       const matchPrice = car.price <= priceLimit;
       return matchMake && matchBody && matchPrice;
     }).length;
-  }, [filterMake, filterBody, filterPrice]);
+  }, [filterMake, filterBody, filterPrice, cars]);
 
   // We double the cars for the seamless loop
-  const carouselCars = [...CARS, ...CARS];
+  const carouselCars = cars.length > 0 ? [...cars, ...cars] : [];
 
-  const OFFERS = CARS.map(car => ({
-    id: car.id,
-    make: car.make,
-    model: car.model,
-    price: Math.round(car.price / 400),
-    image: car.image
-  }));
+  const OFFERS = cars.length > 0 ? cars.map(car => ({
+    id: car.id || '',
+    make: car.make || '',
+    model: car.model || '',
+    price: Math.round((car.price || 0) / 400),
+    image: car.image || ''
+  })) : [];
 
   // Standard Rotations
   useEffect(() => {
-    const heroTimer = setInterval(() => setCurrentHeroCarIdx((prev) => (prev + 1) % CARS.length), 8000);
+    const heroTimer = setInterval(() => setCurrentHeroCarIdx((prev) => (prev + 1) % cars.length), 8000);
     const testimonialTimer = setInterval(() => setCurrentTestimonialIdx((prev) => (prev + 1) % TESTIMONIALS.length), 6000);
     const offerTimer = setInterval(() => setCurrentOfferIdx((prev) => (prev + 1) % OFFERS.length), 10000);
 
@@ -157,8 +178,17 @@ const Home: React.FC = () => {
     };
   }, [isCarouselPaused]);
 
+  // Ensure video autoplays
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.play().catch(error => {
+        console.log('Autoplay was prevented:', error);
+      });
+    }
+  }, []);
+
   const handleAnimationComplete = () => {
-    if (carouselIndex >= CARS.length) {
+    if (carouselIndex >= cars.length) {
       setIsResetting(true);
       setCarouselIndex(0);
     }
@@ -176,9 +206,9 @@ const Home: React.FC = () => {
     }
   };
 
-  const currentHeroCar = CARS[currentHeroCarIdx];
-  const currentTestimonial = TESTIMONIALS[currentTestimonialIdx];
-  const currentOffer = OFFERS[currentOfferIdx];
+  const currentHeroCar = cars[currentHeroCarIdx] || { id: '', make: '', model: '', image: '' };
+  const currentTestimonial = TESTIMONIALS[currentTestimonialIdx] || { quote: '', author: '', role: '', image: '' };
+  const currentOffer = OFFERS[currentOfferIdx] || { title: '', description: '', icon: null };
   const vehicleSlidePercent = isMobile ? 100 : 100 / 4;
 
   return (
@@ -307,7 +337,7 @@ const Home: React.FC = () => {
                       <p className="text-[12px] font-display font-bold uppercase tracking-tight text-black">{currentHeroCar.model}</p>
                     </div>
                     <div className="flex gap-1">
-                      {CARS.map((_, i) => (
+                      {cars.map((_, i) => (
                         <div 
                           key={i} 
                           className={`w-1 h-1 rounded-full transition-all duration-300 ${i === currentHeroCarIdx ? 'w-3 bg-[#C59B6D]' : 'bg-black/10'}`} 
@@ -339,11 +369,13 @@ const Home: React.FC = () => {
                   </div>
                 </div>
                 <div className="h-32 mb-3 overflow-hidden rounded-xl">
-                  <img
-                    src={currentHeroCar.image}
-                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
-                    alt={currentHeroCar.model}
-                  />
+                  {currentHeroCar.image && (
+                    <img
+                      src={currentHeroCar.image}
+                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
+                      alt={currentHeroCar.model}
+                    />
+                  )}
                 </div>
                 <div className="flex justify-between items-end">
                   <div>
@@ -369,7 +401,7 @@ const Home: React.FC = () => {
               <CustomSelect
                 label="Make"
                 value={filterMake}
-                options={['All', ...Array.from(new Set(CARS.map(c => c.make)))]}
+                options={['All', ...Array.from(new Set(cars.map(c => c.make || ''))).filter(Boolean)]}
                 onChange={setFilterMake}
                 bgClass="hover:bg-white/5"
                 theme="dark"
@@ -379,7 +411,7 @@ const Home: React.FC = () => {
               <CustomSelect
                 label="Body Style"
                 value={filterBody}
-                options={['All', ...Array.from(new Set(CARS.map(c => c.bodyType)))]}
+                options={['All', ...Array.from(new Set(cars.map(c => c.bodyType || ''))).filter(Boolean)]}
                 onChange={setFilterBody}
                 bgClass="hover:bg-white/5"
                 theme="dark"
@@ -508,8 +540,8 @@ const Home: React.FC = () => {
               className="flex gap-0 md:gap-4"
             >
               {carouselCars.map((car, idx) => (
-                <div key={`${car.id}-${idx}`} className="flex-shrink-0 w-full md:w-[calc(50%-8px)] lg:w-[calc(31%-12px)]">
-                  <Link to={`/car/${car.id}`}>
+                <div key={`${car.id || 'car'}-${idx}`} className="flex-shrink-0 w-full md:w-[calc(50%-8px)] lg:w-[calc(31%-12px)]">
+                  <Link to={`/car/${car.id || ''}`}>
                     <motion.div 
                       whileHover="hover"
                       initial="initial"
@@ -586,7 +618,7 @@ const Home: React.FC = () => {
                       <motion.div variants={{ initial: { opacity: 1 }, hover: { opacity: 0 } }} className="absolute inset-0 p-10 flex flex-col justify-between z-20">
                         <h3 className="text-4xl font-display font-bold leading-[0.9] tracking-tighter uppercase whitespace-pre-line italic text-white shadow-sm drop-shadow-md">
                           <span className="text-xs block mb-2 opacity-60 not-italic tracking-[0.5em] font-black">{car.year}</span>
-                          {car.make} <br /> {car.model.split(' ')[0]}
+                          {car.make} <br /> {car.model ? car.model.split(' ')[0] : ''}
                         </h3>
                         <div className="flex justify-end">
                           <div className="w-14 h-14 rounded-full flex items-center justify-center shadow-xl bg-white text-black transition-transform hover:scale-110">

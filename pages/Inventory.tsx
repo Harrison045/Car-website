@@ -1,8 +1,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LayoutGrid, List, SlidersHorizontal, ArrowUpRight, Search, X } from 'lucide-react';
-import { CARS } from '../data/mockData';
 import { Link, useSearchParams } from 'react-router-dom';
+import axios from 'axios';
+
+// Import Car interface for type safety
+import { Car } from '../types';
 
 const SkeletonCard: React.FC<{ view: 'grid' | 'list' }> = ({ view }) => (
   <div 
@@ -37,13 +40,32 @@ const SkeletonCard: React.FC<{ view: 'grid' | 'list' }> = ({ view }) => (
 const Inventory: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [view, setView] = useState<'grid' | 'list'>('grid');
-  const [search, setSearch] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [search, setSearch] = useState(searchParams.get('q') || '');
   const [filters, setFilters] = useState({
-    make: searchParams.get('make') || 'All',
-    bodyType: searchParams.get('bodyType') || 'All',
-    maxPrice: Number(searchParams.get('maxPrice')) || 500000
+    make: 'All',
+    bodyType: 'All',
+    fuelType: 'All',
+    transmission: 'All',
+    maxPrice: 500000
   });
+  const [cars, setCars] = useState<Car[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch cars from backend
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        const response = await axios.get('http://localhost:5050/api/cars');
+        setCars(response.data);
+      } catch (error) {
+        console.error('Error fetching cars:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCars();
+  }, []);
 
   useEffect(() => {
     setIsLoading(true);
@@ -54,18 +76,31 @@ const Inventory: React.FC = () => {
   }, [search, filters]);
 
   const filteredCars = useMemo(() => {
-    return CARS.filter(car => {
-      const matchesSearch = car.make.toLowerCase().includes(search.toLowerCase()) || 
-                          car.model.toLowerCase().includes(search.toLowerCase());
-      const matchesMake = filters.make === 'All' || car.make === filters.make;
-      const matchesBody = filters.bodyType === 'All' || car.bodyType === filters.bodyType;
-      const matchesPrice = car.price <= filters.maxPrice;
-      return matchesSearch && matchesMake && matchesBody && matchesPrice;
+    return cars.filter(car => {
+      // Defensive: Check if car exists and has required properties
+      if (!car || typeof car !== 'object') return false;
+      
+      const carMake = car.make || '';
+      const carModel = car.model || '';
+      const carBodyType = car.bodyType || '';
+      const carFuelType = car.fuelType || '';
+      const carTransmission = car.transmission || '';
+      const carPrice = car.price || 0;
+      
+      const matchesSearch = carMake.toLowerCase().includes(search.toLowerCase()) || 
+                          carModel.toLowerCase().includes(search.toLowerCase());
+      const matchesMake = filters.make === 'All' || carMake === filters.make;
+      const matchesBody = filters.bodyType === 'All' || carBodyType === filters.bodyType;
+      const matchesFuel = filters.fuelType === 'All' || carFuelType === filters.fuelType;
+      const matchesTransmission = filters.transmission === 'All' || carTransmission === filters.transmission;
+      const matchesPrice = carPrice <= filters.maxPrice;
+      
+      return matchesSearch && matchesMake && matchesBody && matchesFuel && matchesTransmission && matchesPrice;
     });
-  }, [search, filters]);
+  }, [search, filters, cars]);
 
-  const makes = ['All', ...new Set(CARS.map(c => c.make))];
-  const bodies = ['All', ...new Set(CARS.map(c => c.bodyType))];
+  const makes = ['All', ...new Set(cars.map(c => c.make || '').filter(Boolean))];
+  const bodies = ['All', ...new Set(cars.map(c => c.bodyType || '').filter(Boolean))];
 
   return (
     <div className="pt-48 pb-32 px-6 bg-[#050505] min-h-screen">
@@ -83,7 +118,7 @@ const Inventory: React.FC = () => {
               aria-live="polite"
               className="text-white/50 uppercase text-[10px] tracking-[0.3em] font-black"
             >
-              {isLoading ? 'Synchronizing Asset Database...' : `Currently Curating ${filteredCars.length} Performance Assets`}
+              {isLoading ? 'Synchronizing Asset Database...' : `Currently Curating ${cars.length} Performance Assets`}
             </p>
           </div>
           

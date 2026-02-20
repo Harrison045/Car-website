@@ -22,7 +22,7 @@ import {
   Info,
   CreditCard
 } from 'lucide-react';
-import { CARS } from '../data/mockData';
+import { carService } from '../services/carService';
 import { useAuth } from '../contexts/AuthContext';
 import AuthModal from '../components/AuthModal';
 
@@ -30,8 +30,37 @@ const Booking: React.FC = () => {
   const [searchParams] = useSearchParams();
   const { isAuthenticated } = useAuth();
   const preSelectedId = searchParams.get('carId');
+  const [cars, setCars] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [selectedCar, setSelectedCar] = useState(CARS.find(c => c.id === preSelectedId) || CARS[0]);
+  // Fetch cars from backend
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        const fetchedCars = await carService.getAllCars();
+        setCars(fetchedCars);
+      } catch (error) {
+        console.error('Error fetching cars:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCars();
+  }, []);
+
+  // Update selected car when cars are loaded
+  useEffect(() => {
+    if (cars.length > 0) {
+      const preSelectedCar = cars.find(c => c.id === preSelectedId);
+      setSelectedCar(preSelectedCar || cars[0]);
+    }
+  }, [cars, preSelectedId]);
+
+  const [selectedCar, setSelectedCar] = useState(() => {
+    const initialCar = cars.find(c => c.id === preSelectedId);
+    return initialCar || null;
+  });
   const [pickupDate, setPickupDate] = useState('');
   const [dropoffDate, setDropoffDate] = useState('');
   const [location, setLocation] = useState('Milan HQ');
@@ -53,7 +82,16 @@ const Booking: React.FC = () => {
     return diff > 0 ? diff : 1;
   }, [pickupDate, dropoffDate]);
 
-  const dailyRate = Math.round(selectedCar.price / 350);
+  // Loading state and error handling after all hooks
+  if (isLoading || !selectedCar) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-white">{isLoading ? 'Loading...' : 'Please select a car'}</div>
+      </div>
+    );
+  }
+
+  const dailyRate = selectedCar ? Math.round(selectedCar.price / 350) : 0;
   const addonsTotal = addons.reduce((acc, curr) => {
     const option = addonOptions.find(o => o.id === curr);
     return acc + (option ? option.price : 0);
@@ -145,7 +183,7 @@ VERIFIED BY LUMINA SELECT PROTOCOL
                       <CarIcon size={18} className="text-[#C59B6D]" /> 01. Select Asset
                     </h2>
                     <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar snap-x">
-                      {CARS.map(car => (
+                      {cars.map(car => (
                         <button
                           key={car.id}
                           onClick={() => setSelectedCar(car)}

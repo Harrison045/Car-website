@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CARS } from '../data/mockData';
+import { carService } from '../services/carService';
 import { useAuth } from '../contexts/AuthContext';
 import AuthModal from '../components/AuthModal';
 import { 
@@ -33,19 +33,52 @@ const CarDetails: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const car = CARS.find(c => c.id === id);
-  
-  const [activeImg, setActiveImg] = useState(car?.gallery[0] || car?.image || '');
+  const [car, setCar] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeImg, setActiveImg] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [bookingStatus, setBookingStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
+  
+  // Fetch car from backend
+  useEffect(() => {
+    const fetchCar = async () => {
+      try {
+        const fetchedCar = await carService.getCarById(id);
+        setCar(fetchedCar);
+      } catch (error) {
+        console.error('Error fetching car:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCar();
+  }, [id]);
 
   useEffect(() => {
     if (car) {
       setActiveImg(car.gallery[0] || car.image);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [id, car]);
+  }, [car]);
+  
+  // Loading state and error handling after all hooks
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-white">Loading asset details...</div>
+      </div>
+    );
+  }
+
+  if (!car) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-white">Asset not found</div>
+      </div>
+    );
+  }
 
   if (!car) return (
     <div className="pt-60 text-center h-screen bg-black text-white">
@@ -62,10 +95,10 @@ const CarDetails: React.FC = () => {
     { icon: Fuel, label: 'Energy Source', val: car.fuelType, color: 'text-emerald-400' }
   ];
 
-  const similarCars = CARS.filter(c => 
+  const similarCars = car ? carService.getCachedCars().filter(c => 
     c.id !== car.id && 
     (c.make === car.make || c.bodyType === car.bodyType)
-  );
+  ).slice(0, 4) : [];
 
   const handleBookingStart = () => {
     if (!isAuthenticated) {
