@@ -55,7 +55,7 @@ const Inventory: React.FC = () => {
     bodyType: "All",
     fuelType: "All",
     transmission: "All",
-    maxPrice: 500000,
+    maxPrice: 2000000,
   });
   const [cars, setCars] = useState<Car[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -279,15 +279,18 @@ const Inventory: React.FC = () => {
                       className="text-[10px] font-black tracking-widest text-white"
                       aria-live="polite"
                     >
-                      ${(filters.maxPrice / 1000).toFixed(0)}K
+                      $
+                      {filters.maxPrice >= 1000000
+                        ? (filters.maxPrice / 1000000).toFixed(1) + "M"
+                        : (filters.maxPrice / 1000).toFixed(0) + "K"}
                     </span>
                   </div>
                   <input
                     id="price-threshold"
                     type="range"
                     min="50000"
-                    max="500000"
-                    step="5000"
+                    max="2000000"
+                    step="50000"
                     value={filters.maxPrice}
                     onChange={(e) =>
                       setFilters((f) => ({
@@ -296,7 +299,7 @@ const Inventory: React.FC = () => {
                       }))
                     }
                     aria-valuemin={50000}
-                    aria-valuemax={500000}
+                    aria-valuemax={2000000}
                     aria-valuenow={filters.maxPrice}
                     aria-valuetext={`$${filters.maxPrice.toLocaleString()}`}
                     className="w-full h-1.5 bg-white/5 rounded-full appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#C59B6D]"

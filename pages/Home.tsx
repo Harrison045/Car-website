@@ -108,7 +108,7 @@ const Home: React.FC = () => {
   // Filter State
   const [filterMake, setFilterMake] = useState("All");
   const [filterBody, setFilterBody] = useState("All");
-  const [filterPrice, setFilterPrice] = useState<number | "">(500000);
+  const [filterPrice, setFilterPrice] = useState<number | "">(2000000);
   const navigate = useNavigate();
 
   // Cars State
@@ -142,7 +142,7 @@ const Home: React.FC = () => {
     return cars.filter((car) => {
       const matchMake = filterMake === "All" || car.make === filterMake;
       const matchBody = filterBody === "All" || car.bodyType === filterBody;
-      const priceLimit = filterPrice === "" ? 0 : filterPrice;
+      const priceLimit = filterPrice === "" ? 10000000 : filterPrice;
       const matchPrice = car.price <= priceLimit;
       return matchMake && matchBody && matchPrice;
     }).length;
@@ -526,7 +526,7 @@ const Home: React.FC = () => {
                   <input
                     type="number"
                     min="0"
-                    max="1000000"
+                    max="2000000"
                     step="1000"
                     value={filterPrice}
                     onChange={(e) =>
@@ -535,15 +535,15 @@ const Home: React.FC = () => {
                       )
                     }
                     className="text-[13px] font-bold uppercase tracking-tight text-white bg-transparent border-none outline-none w-28 p-0 focus:ring-0 placeholder-white/30"
-                    placeholder="0"
+                    placeholder="Unlimited"
                   />
                 </div>
                 <input
                   type="range"
                   min="50000"
-                  max="500000"
-                  step="10000"
-                  value={filterPrice === "" ? 0 : filterPrice}
+                  max="2000000"
+                  step="50000"
+                  value={filterPrice === "" ? 2000000 : filterPrice}
                   onChange={(e) => setFilterPrice(Number(e.target.value))}
                   className="absolute inset-0 opacity-0 cursor-pointer z-10"
                 />
