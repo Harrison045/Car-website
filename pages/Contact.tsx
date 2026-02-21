@@ -9,18 +9,41 @@ import {
   ArrowRight,
   CheckCircle,
 } from "lucide-react";
+import { inquiryService } from "../services/inquiryService";
 
 const Contact: React.FC = () => {
   const [formStatus, setFormStatus] = useState<
     "idle" | "submitting" | "success"
   >("idle");
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    interest: "",
+    message: "",
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormStatus("submitting");
-    setTimeout(() => {
+
+    try {
+      await inquiryService.submitInquiry({
+        type: "General",
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        subject: `Inquiry: ${formData.interest.toUpperCase()}`,
+        message: formData.message,
+        details: {
+          interest: formData.interest,
+        },
+      });
       setFormStatus("success");
-    }, 1500);
+    } catch (error) {
+      console.error("Inquiry Protocol Breach:", error);
+      setFormStatus("idle");
+      alert("Inquiry transmission failed. Please attempt protocol again.");
+    }
   };
 
   return (
@@ -131,6 +154,10 @@ const Contact: React.FC = () => {
                       id="firstName"
                       type="text"
                       required
+                      value={formData.firstName}
+                      onChange={(e) =>
+                        setFormData({ ...formData, firstName: e.target.value })
+                      }
                       placeholder="GIVEN NAME"
                       className="bg-transparent border-b border-white/10 py-4 px-2 text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:border-[#C59B6D] transition-all w-full"
                     />
@@ -143,6 +170,10 @@ const Contact: React.FC = () => {
                       id="lastName"
                       type="text"
                       required
+                      value={formData.lastName}
+                      onChange={(e) =>
+                        setFormData({ ...formData, lastName: e.target.value })
+                      }
                       placeholder="FAMILY NAME"
                       className="bg-transparent border-b border-white/10 py-4 px-2 text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:border-[#C59B6D] transition-all w-full"
                     />
@@ -156,6 +187,10 @@ const Contact: React.FC = () => {
                     id="email"
                     type="email"
                     required
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
                     placeholder="SECURE EMAIL"
                     className="bg-transparent border-b border-white/10 py-4 px-2 text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:border-[#C59B6D] transition-all w-full"
                   />
@@ -167,6 +202,10 @@ const Contact: React.FC = () => {
                   <select
                     id="interest"
                     required
+                    value={formData.interest}
+                    onChange={(e) =>
+                      setFormData({ ...formData, interest: e.target.value })
+                    }
                     className="bg-[#050505] border-none border-b border-white/10 py-4 px-2 text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:border-[#C59B6D] transition-all w-full appearance-none"
                   >
                     <option value="">SELECT INTEREST</option>
@@ -182,6 +221,10 @@ const Contact: React.FC = () => {
                   <textarea
                     id="message"
                     required
+                    value={formData.message}
+                    onChange={(e) =>
+                      setFormData({ ...formData, message: e.target.value })
+                    }
                     placeholder="MESSAGE DETAIL"
                     rows={4}
                     className="bg-transparent border-b border-white/10 py-4 px-2 text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:border-[#C59B6D] transition-all w-full resize-none"

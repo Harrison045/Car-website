@@ -3,7 +3,7 @@ interface User {
   email: string;
   name: string;
   password: string; // In production, this would be hashed
-  membershipTier: 'standard' | 'premium' | 'elite';
+  membershipTier: "standard" | "premium" | "elite";
   joinDate: string;
   avatar?: string;
 }
@@ -12,7 +12,7 @@ interface PublicUser {
   id: string;
   email: string;
   name: string;
-  membershipTier: 'standard' | 'premium' | 'elite';
+  membershipTier: "standard" | "premium" | "elite";
   joinDate: string;
   avatar?: string;
 }
@@ -25,8 +25,8 @@ interface AuthResponse {
 
 class AuthService {
   private users: User[] = [];
-  private readonly STORAGE_KEY = 'lumina_users';
-  private readonly SESSION_KEY = 'lumina_current_user';
+  private readonly STORAGE_KEY = "lumina_users";
+  private readonly SESSION_KEY = "lumina_current_user";
 
   constructor() {
     this.loadUsers();
@@ -38,7 +38,7 @@ class AuthService {
       try {
         this.users = JSON.parse(storedUsers);
       } catch (error) {
-        console.error('Error loading users:', error);
+        console.error("Error loading users:", error);
         this.users = [];
       }
     }
@@ -53,7 +53,7 @@ class AuthService {
     let hash = 0;
     for (let i = 0; i < password.length; i++) {
       const char = password.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return btoa(hash.toString());
@@ -64,52 +64,64 @@ class AuthService {
     return emailRegex.test(email);
   }
 
-  private validatePassword(password: string): { isValid: boolean; errors: string[] } {
+  private validatePassword(password: string): {
+    isValid: boolean;
+    errors: string[];
+  } {
     const errors: string[] = [];
-    
+
     if (password.length < 8) {
-      errors.push('Password must be at least 8 characters long');
+      errors.push("Password must be at least 8 characters long");
     }
     if (!/[A-Z]/.test(password)) {
-      errors.push('Password must contain at least one uppercase letter');
+      errors.push("Password must contain at least one uppercase letter");
     }
     if (!/[a-z]/.test(password)) {
-      errors.push('Password must contain at least one lowercase letter');
+      errors.push("Password must contain at least one lowercase letter");
     }
     if (!/\d/.test(password)) {
-      errors.push('Password must contain at least one number');
+      errors.push("Password must contain at least one number");
     }
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      errors.push('Password must contain at least one special character');
+      errors.push("Password must contain at least one special character");
     }
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
-  async register(email: string, password: string, name: string): Promise<AuthResponse> {
+  async register(
+    email: string,
+    password: string,
+    name: string,
+  ): Promise<AuthResponse> {
     // Validate email format
     if (!this.validateEmail(email)) {
-      return { success: false, error: 'Invalid email format' };
+      return { success: false, error: "Invalid email format" };
     }
 
     // Check if email already exists
-    const existingUser = this.users.find(user => user.email.toLowerCase() === email.toLowerCase());
+    const existingUser = this.users.find(
+      (user) => user.email.toLowerCase() === email.toLowerCase(),
+    );
     if (existingUser) {
-      return { success: false, error: 'Email already registered' };
+      return { success: false, error: "Email already registered" };
     }
 
     // Validate password
     const passwordValidation = this.validatePassword(password);
     if (!passwordValidation.isValid) {
-      return { success: false, error: passwordValidation.errors.join(', ') };
+      return { success: false, error: passwordValidation.errors.join(", ") };
     }
 
     // Validate name
     if (!name || name.trim().length < 2) {
-      return { success: false, error: 'Name must be at least 2 characters long' };
+      return {
+        success: false,
+        error: "Name must be at least 2 characters long",
+      };
     }
 
     // Create new user
@@ -118,8 +130,12 @@ class AuthService {
       email: email.toLowerCase().trim(),
       name: name.trim(),
       password: this.hashPassword(password),
-      membershipTier: email.includes('premium') ? 'premium' : email.includes('elite') ? 'elite' : 'standard',
-      joinDate: new Date().toISOString()
+      membershipTier: email.includes("premium")
+        ? "premium"
+        : email.includes("elite")
+          ? "elite"
+          : "standard",
+      joinDate: new Date().toISOString(),
     };
 
     this.users.push(newUser);
@@ -127,31 +143,33 @@ class AuthService {
 
     // Remove password from response
     const { password: _, ...publicUser } = newUser;
-    
+
     return { success: true, user: publicUser };
   }
 
   async login(email: string, password: string): Promise<AuthResponse> {
     // Validate email format
     if (!this.validateEmail(email)) {
-      return { success: false, error: 'Invalid email format' };
+      return { success: false, error: "Invalid email format" };
     }
 
     // Find user by email
-    const user = this.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    const user = this.users.find(
+      (u) => u.email.toLowerCase() === email.toLowerCase(),
+    );
     if (!user) {
-      return { success: false, error: 'Email not found' };
+      return { success: false, error: "Email not found" };
     }
 
     // Verify password
     const hashedPassword = this.hashPassword(password);
     if (user.password !== hashedPassword) {
-      return { success: false, error: 'Incorrect password' };
+      return { success: false, error: "Incorrect password" };
     }
 
     // Remove password from response
     const { password: _, ...publicUser } = user;
-    
+
     // Store current session
     this.setCurrentUser(publicUser);
 
@@ -168,7 +186,7 @@ class AuthService {
       try {
         return JSON.parse(currentUser);
       } catch (error) {
-        console.error('Error parsing current user:', error);
+        console.error("Error parsing current user:", error);
         this.logout();
         return null;
       }
@@ -184,15 +202,24 @@ class AuthService {
     return this.getCurrentUser() !== null;
   }
 
+  getAuthHeaders(): Record<string, string> {
+    const user = this.getCurrentUser();
+    if (!user) return {};
+    // Note: In this demo, since we don't have a real JWT for clients yet
+    // we use a simple header that the backend currently accepts for the 'my' route.
+    // In production this would be 'Authorization': 'Bearer ' + token
+    return { Authorization: user.email };
+  }
+
   async updateProfile(updates: Partial<PublicUser>): Promise<AuthResponse> {
     const currentUser = this.getCurrentUser();
     if (!currentUser) {
-      return { success: false, error: 'No user logged in' };
+      return { success: false, error: "No user logged in" };
     }
 
-    const userIndex = this.users.findIndex(u => u.id === currentUser.id);
+    const userIndex = this.users.findIndex((u) => u.id === currentUser.id);
     if (userIndex === -1) {
-      return { success: false, error: 'User not found' };
+      return { success: false, error: "User not found" };
     }
 
     // Update user data
@@ -207,26 +234,29 @@ class AuthService {
     return { success: true, user: publicUser };
   }
 
-  async changePassword(currentPassword: string, newPassword: string): Promise<AuthResponse> {
+  async changePassword(
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<AuthResponse> {
     const currentUser = this.getCurrentUser();
     if (!currentUser) {
-      return { success: false, error: 'No user logged in' };
+      return { success: false, error: "No user logged in" };
     }
 
-    const user = this.users.find(u => u.id === currentUser.id);
+    const user = this.users.find((u) => u.id === currentUser.id);
     if (!user) {
-      return { success: false, error: 'User not found' };
+      return { success: false, error: "User not found" };
     }
 
     // Verify current password
     if (user.password !== this.hashPassword(currentPassword)) {
-      return { success: false, error: 'Current password is incorrect' };
+      return { success: false, error: "Current password is incorrect" };
     }
 
     // Validate new password
     const passwordValidation = this.validatePassword(newPassword);
     if (!passwordValidation.isValid) {
-      return { success: false, error: passwordValidation.errors.join(', ') };
+      return { success: false, error: passwordValidation.errors.join(", ") };
     }
 
     // Update password

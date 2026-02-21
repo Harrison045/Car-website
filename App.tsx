@@ -6,6 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import AdminNavbar from "./components/AdminNavbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Inventory from "./pages/Inventory";
@@ -64,17 +65,37 @@ const AnimatedRoutes = () => {
           <Route path="/faq" element={<FAQ />} />
           <Route path="/booking" element={<Booking />} />
           <Route path="/admin/login" element={<Login />} />
-          <Route 
-            path="/admin/dashboard" 
+          <Route
+            path="/admin/dashboard"
             element={
               <ProtectedRoute>
                 <Dashboard />
               </ProtectedRoute>
-            } 
+            }
           />
         </Routes>
       </motion.div>
     </AnimatePresence>
+  );
+};
+
+const AppContent: React.FC = () => {
+  const location = useLocation();
+  const isAdminPath = location.pathname.startsWith("/admin");
+  const isLoginPage = location.pathname === "/admin/login";
+
+  return (
+    <div className="flex flex-col min-h-screen relative overflow-x-hidden">
+      {!isLoginPage && isAdminPath ? (
+        <AdminNavbar />
+      ) : (
+        !isAdminPath && <Navbar />
+      )}
+      <main className="flex-grow">
+        <AnimatedRoutes />
+      </main>
+      {!isAdminPath && <Footer />}
+    </div>
   );
 };
 
@@ -83,13 +104,7 @@ const App: React.FC = () => {
     <AuthProvider>
       <Router>
         <ScrollToTop />
-        <div className="flex flex-col min-h-screen relative overflow-x-hidden">
-          <Navbar />
-          <main className="flex-grow">
-            <AnimatedRoutes />
-          </main>
-          <Footer />
-        </div>
+        <AppContent />
       </Router>
     </AuthProvider>
   );
