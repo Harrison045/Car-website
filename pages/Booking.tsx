@@ -246,14 +246,21 @@ VERIFIED BY LUMINA SELECT PROTOCOL
                         <button
                           key={car.id}
                           onClick={() => setSelectedCar(car)}
-                          className={`flex-shrink-0 w-64 snap-start text-left group transition-all ${selectedCar.id === car.id ? "opacity-100" : "opacity-40 grayscale hover:opacity-70"}`}
+                          className={`flex-shrink-0 w-64 snap-start text-left group transition-all ${selectedCar.id === car.id ? "opacity-100" : "opacity-40 grayscale hover:opacity-70"} ${car.status === "Reserved" ? "cursor-not-allowed" : ""}`}
                         >
                           <div
-                            className={`aspect-[16/10] rounded-[2rem] overflow-hidden mb-4 border-2 transition-all ${selectedCar.id === car.id ? "border-[#C59B6D]" : "border-transparent"}`}
+                            className={`aspect-[16/10] rounded-[2rem] overflow-hidden mb-4 border-2 transition-all relative ${selectedCar.id === car.id ? "border-[#C59B6D]" : "border-transparent"}`}
                           >
+                            {car.status === "Reserved" && (
+                              <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10 backdrop-blur-[2px]">
+                                <span className="bg-amber-500 text-black px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest shadow-xl">
+                                  Reserved
+                                </span>
+                              </div>
+                            )}
                             <img
                               src={car.image}
-                              className="w-full h-full object-cover"
+                              className={`w-full h-full object-cover ${car.status === "Reserved" ? "grayscale" : ""}`}
                               alt={car.model}
                             />
                           </div>
@@ -407,18 +414,24 @@ VERIFIED BY LUMINA SELECT PROTOCOL
 
                         <button
                           onClick={handleBooking}
-                          disabled={formStatus === "submitting"}
-                          className="w-full py-6 bg-white text-black rounded-full text-[10px] font-black uppercase tracking-[0.5em] hover:bg-[#C59B6D] hover:text-white transition-all shadow-xl flex items-center justify-center gap-4 group disabled:opacity-50"
+                          disabled={
+                            formStatus === "submitting" ||
+                            selectedCar?.status === "Reserved"
+                          }
+                          className="w-full py-6 bg-white text-black rounded-full text-[10px] font-black uppercase tracking-[0.5em] hover:bg-[#C59B6D] hover:text-white transition-all shadow-xl flex items-center justify-center gap-4 group disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {formStatus === "submitting"
                             ? "Establishing Protocol..."
-                            : "Confirm Reservation"}
-                          {formStatus === "idle" && (
-                            <ChevronRight
-                              size={18}
-                              className="group-hover:translate-x-2 transition-transform"
-                            />
-                          )}
+                            : selectedCar?.status === "Reserved"
+                              ? "Asset Currently Secured"
+                              : "Confirm Reservation"}
+                          {formStatus === "idle" &&
+                            selectedCar?.status !== "Reserved" && (
+                              <ChevronRight
+                                size={18}
+                                className="group-hover:translate-x-2 transition-transform"
+                              />
+                            )}
                         </button>
                       </div>
                     </div>
