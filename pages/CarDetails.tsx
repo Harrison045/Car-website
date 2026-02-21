@@ -278,7 +278,7 @@ VERIFIED BY LUMINA SELECT PROTOCOL
                   {car.year} Model
                 </span>
                 <span
-                  className={`flex items-center gap-2 px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase italic ${car.status === "Available" ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"}`}
+                  className={`flex items-center gap-2 px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase italic ${car.status === "Available" ? "bg-green-500/10 text-green-400" : car.status === "Reserved" ? "bg-amber-500/10 text-amber-400" : "bg-red-500/10 text-red-400"}`}
                 >
                   {car.status}
                 </span>
@@ -302,17 +302,20 @@ VERIFIED BY LUMINA SELECT PROTOCOL
                 <button
                   onClick={handleBookingStart}
                   disabled={
-                    userBooking &&
-                    (userBooking.status === "Pending" ||
-                      userBooking.status === "Approved")
+                    car.status === "Reserved" ||
+                    (userBooking &&
+                      (userBooking.status === "Pending" ||
+                        userBooking.status === "Approved"))
                   }
                   className="flex-1 py-7 bg-white text-black font-black uppercase text-xs tracking-[0.3em] rounded-full hover:scale-105 transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {userBooking?.status === "Pending"
-                    ? "Authorization Pending"
-                    : userBooking?.status === "Approved"
-                      ? "Possession Authorized"
-                      : "Secure This Asset"}
+                  {car.status === "Reserved"
+                    ? "Currently Reserved"
+                    : userBooking?.status === "Pending"
+                      ? "Authorization Pending"
+                      : userBooking?.status === "Approved"
+                        ? "Possession Authorized"
+                        : "Secure This Asset"}
                 </button>
                 <button
                   onClick={() => navigate("/contact")}

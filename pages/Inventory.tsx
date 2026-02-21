@@ -367,7 +367,9 @@ const Inventory: React.FC = () => {
                           alt={`${car.make} ${car.model}`}
                         />
                         {car.status !== "Available" && (
-                          <div className="absolute top-6 left-6 px-4 py-2 bg-black/80 backdrop-blur-xl rounded-full text-[9px] font-black uppercase tracking-[0.2em] z-10 text-white">
+                          <div
+                            className={`absolute top-6 left-6 px-4 py-2 backdrop-blur-xl rounded-full text-[9px] font-black uppercase tracking-[0.2em] z-10 ${car.status === "Reserved" ? "bg-amber-500 text-black" : "bg-black/80 text-white"}`}
+                          >
                             {car.status}
                           </div>
                         )}

@@ -222,9 +222,21 @@ const Dashboard = () => {
     try {
       const headers = adminAuthService.getAuthHeaders();
       await bookingService.updateBookingStatus(id, status, headers);
+
+      // If approved, automatically mark the car as reserved
+      if (status === "Approved") {
+        const booking = bookings.find((b) => b.id === id);
+        const carId =
+          booking?.carId?.id || booking?.carId?._id || booking?.carId;
+
+        if (carId) {
+          await carService.updateCar(carId, { status: "Reserved" }, headers);
+          fetchCars();
+        }
+      }
+
       setSuccessMessage(`Protocol updated: Request ${status}.`);
       fetchBookings();
-      // If approved, optionally update car status - keeping it simple for now as requested
     } catch (err) {
       setError("Status update protocol failed.");
     }
