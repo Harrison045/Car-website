@@ -116,7 +116,8 @@ const Booking: React.FC = () => {
     );
   }
 
-  const dailyRate = selectedCar ? Math.round(selectedCar.price / 350) : 0;
+  const dailyRate =
+    selectedCar?.rentPrice || Math.round((selectedCar?.price || 0) / 350);
   const addonsTotal = addons.reduce((acc, curr) => {
     const option = addonOptions.find((o) => o.id === curr);
     return acc + (option ? option.price : 0);

@@ -382,8 +382,11 @@ const Inventory: React.FC = () => {
                             <h3 className="text-3xl font-black font-display uppercase italic tracking-tighter leading-none text-white">
                               {car.make} <br /> {car.model}
                             </h3>
-                            <span className="text-xl font-black text-white">
-                              ${car.price.toLocaleString()}
+                            <span className="text-xl font-black text-[#C59B6D]">
+                              FROM $
+                              {car.rentPrice?.toLocaleString() ||
+                                (car.price / 100).toLocaleString()}
+                              /DAY
                             </span>
                           </div>
                           <div className="flex gap-6 text-[9px] text-white/50 uppercase tracking-[0.3em] font-black mb-8">

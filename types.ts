@@ -4,10 +4,11 @@ export interface Car {
   model: string;
   year: number;
   price: number;
+  rentPrice: number;
   mileage: number;
-  transmission: 'Automatic' | 'Manual';
-  fuelType: 'Electric' | 'Hybrid' | 'Gasoline';
-  bodyType: 'SUV' | 'Sedan' | 'Coupe' | 'Convertible';
+  transmission: "Automatic" | "Manual";
+  fuelType: "Electric" | "Hybrid" | "Gasoline";
+  bodyType: "SUV" | "Sedan" | "Coupe" | "Convertible";
   engine: string;
   hp: number;
   acceleration: string;
@@ -15,7 +16,7 @@ export interface Car {
   gallery: string[];
   features: string[];
   description: string;
-  status: 'Available' | 'Sold' | 'Reserved';
+  status: "Available" | "Sold" | "Reserved";
 }
 
 export interface Stat {

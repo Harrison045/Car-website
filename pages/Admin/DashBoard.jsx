@@ -46,6 +46,7 @@ const Dashboard = () => {
     make: "",
     model: "",
     price: "",
+    rentPrice: "",
     year: "",
     image: "",
     fuelType: "Gasoline",
@@ -117,6 +118,7 @@ const Dashboard = () => {
         make: form.make,
         model: form.model,
         price: parseFloat(form.price),
+        rentPrice: parseFloat(form.rentPrice) || 0,
         year: parseInt(form.year),
         image:
           form.image ||
@@ -167,6 +169,7 @@ const Dashboard = () => {
       make: "",
       model: "",
       price: "",
+      rentPrice: "",
       year: "",
       image: "",
       fuelType: "Gasoline",
@@ -188,6 +191,7 @@ const Dashboard = () => {
       make: car.make,
       model: car.model,
       price: car.price.toString(),
+      rentPrice: (car.rentPrice || 0).toString(),
       year: car.year.toString(),
       image: car.image,
       fuelType: car.fuelType,
@@ -823,7 +827,7 @@ const Dashboard = () => {
                   </div>
                   <div className="space-y-4">
                     <label className="text-[9px] uppercase tracking-[0.4em] font-black text-white/30 ml-4 block italic">
-                      Price Engagement ($)
+                      Purchase Price ($)
                     </label>
                     <input
                       type="number"
@@ -834,6 +838,21 @@ const Dashboard = () => {
                       }
                       className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-8 text-sm focus:outline-none focus:ring-2 focus:ring-[#C59B6D] transition-all"
                       placeholder="850000"
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <label className="text-[9px] uppercase tracking-[0.4em] font-black text-white/30 ml-4 block italic">
+                      Daily Rent Price ($)
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      value={form.rentPrice}
+                      onChange={(e) =>
+                        setForm({ ...form, rentPrice: e.target.value })
+                      }
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-8 text-sm focus:outline-none focus:ring-2 focus:ring-[#C59B6D] transition-all"
+                      placeholder="1500"
                     />
                   </div>
                   <div className="space-y-4">

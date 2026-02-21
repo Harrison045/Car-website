@@ -289,13 +289,25 @@ VERIFIED BY LUMINA SELECT PROTOCOL
                   {car.model}
                 </span>
               </h1>
-              <div className="flex items-baseline gap-4 mb-14">
-                <span className="text-5xl font-black italic tracking-tighter">
-                  ${car.price.toLocaleString()}
-                </span>
-                <span className="text-white/20 text-[10px] font-black uppercase tracking-[0.3em]">
-                  Excluding Local Taxes
-                </span>
+              <div className="flex flex-col gap-2 mb-14">
+                <div className="flex items-baseline gap-4">
+                  <span className="text-5xl font-black italic tracking-tighter text-[#C59B6D]">
+                    $
+                    {car.rentPrice?.toLocaleString() ||
+                      (car.price / 100).toLocaleString()}
+                  </span>
+                  <span className="text-white/40 text-[10px] font-black uppercase tracking-[0.3em]">
+                    Per Solar Day
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-3">
+                  <span className="text-white/20 text-[9px] font-black uppercase tracking-[0.2em]">
+                    Asset Acquisition Value:
+                  </span>
+                  <span className="text-white/40 text-[11px] font-black italic">
+                    ${car.price.toLocaleString()}
+                  </span>
+                </div>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-6">
