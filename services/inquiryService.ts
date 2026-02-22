@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5050/api";
+const API_URL = "https://car-website-1-05eu.onrender.com/api/";
 
 const apiClient = axios.create({
   baseURL: API_URL,

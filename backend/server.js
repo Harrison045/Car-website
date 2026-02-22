@@ -17,6 +17,7 @@ const corsOptions = {
     "http://localhost:3001",
     "http://localhost:3002",
     "http://localhost:5173",
+    "https://car-website-git-phase2-odameharrison13gmailcoms-projects.vercel.app",
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],

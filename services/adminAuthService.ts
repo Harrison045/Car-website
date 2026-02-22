@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5050/api';
+const API_BASE_URL = 'https://car-website-1-05eu.onrender.com/api/';
 
 // Create axios instance with credentials
 const apiClient = axios.create({
